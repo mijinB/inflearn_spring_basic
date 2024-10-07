@@ -83,3 +83,14 @@
    ⇒ (interface) MemberService.java
      (class) MemberServiceImpl.java
 
+*주문(Order)과 할인(DiscountPolicy) 도메인 설계 및 개발
+!! src > main > java > ... > discount > *
+!! src > main > java > ... > order > *
+- 회원 등급에 따라 할인 정책을 적용할 수 있다. → VIP 등급은 1000원 할인해주는 고정 금액 할인을 적용한다.
+   ⇒ (interface) DiscountPolicy.java
+     (class) FixDiscountPolicy.java
+- 회원은 상품을 주문할 수 있다.
+   ⇒ (interface) OrderService.java
+     (class) OrderServiceImpl.java
+- 주문 정보로는 회원id, 상품명, 상품가격, 할인가격이 있다. → DiscountPolicy의 구현체를 통해 할인가격을 추출하여 보내야한다.
+   ⇒ (주문 도메인?) Order.java   // 생성자와 getter, setter과 할인 적용된 가격 반환해주는 메서드, toString()
