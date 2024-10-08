@@ -101,8 +101,8 @@
 !! src > main > java > ... > order > OrderServiceImpl.java
 - ex)하나의 공연이 애플리케이션, 각각의 배역(배우 역할)이 인터페이스라고 가정했을 때, 배역에 맞는 배우를 선택하는 것을 배우가 하진 않는다.
      공연 기획자와 배우의 책임을 확실히 분리하듯이 관심사를 분리해야 한다.
-- AppConfig
-   ↳ 애플리케이션의 전체 동작 방식을 구성(config)하기 위해, 구현 객체를 생성하고, 연결하는 책임을 가지는 별도의 설정 클래스 생성
+*AppConfig
+  ↳ 애플리케이션의 전체 동작 방식을 구성(config)하기 위해, 구현 객체를 생성하고, 연결하는 책임을 가지는 별도의 설정 클래스 생성
 ⭐️생성자 주입을 이용해 인터페이스만 의존하여 DIP 원칙을 지킨다.
 ⭐️생성자를 통해서 어떤 구현 객체를 주입할지는 오직 외부(AppConfig)에서 결정된다. 구현 객체는 실행에만 집중하면 된다.
 - AppConfig는 애플리케이션의 실제 동작에 필요한 구현 객체를 생성한다. (AppConfig 파일에서의 new 구현 객체 부분)
@@ -115,3 +115,7 @@
 - 테스트 부분도 AppConfig 사용해서 수정
    ↳ src > main > java > ... > member > MemberServiceTest.java
      src > test > java > ... > order > OrderServiceTest.java
+- AppConfig를 사용함으로써 애플리케이션이 사용 영역과 구성 영역으로 분리되었다.
+   ⇒ 구현 객체 변경이 필요하면 AppConfig(구성 영역)만 수정하면 된다.
+     클라이언트 코드 수정x
+     OCP, DIP 원칙 모두 지켜진다.
