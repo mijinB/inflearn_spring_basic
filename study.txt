@@ -411,3 +411,8 @@
 !! src > main > java > ... > annotation > MainDiscountPolicy.java
 - @Qualifier("mainDiscountPolicy") 이렇게 문자를 적으면 컴파일시 타입 체크가 안된다. 어노테이션을 직접 만들어서 문제를 해결할 수 있다.
 - @Qualifier 뿐만 아니라 다른 애노테이션들도 함께 조합해서 사용할 수 있다. 하지만 뚜렷한 목적 없이 무분별하게 재정의 하는 것은 유지보수에 더 혼란만 가중할 수 있기 때문에 @Qualifier 같은 문자열 대신 정의할 때에만 사용하는 것이 좋다.
+
+*조회한 빈이 모두 필요할 때 ⇒ List, Map
+!! src > test > java > ... > autowired > AllBeanTest.java
+- 의도적으로 해당 타입의 스프링 빈이 다 필요한 경우도 있다.
+- 참고 파일 코드와 주석 설명을 함께 참고하기
