@@ -6,6 +6,8 @@
 
 ⭐학습이 아닌, 실제 프로젝트에서는 테스트 케이스에 출력문 남기지 않기 !
 
+*스프링은 자동보단 수동이, 넓은 범위보단 좁은 범위의 우선순위가 더 높다.
+
 +----------------------------------------------------------------------------------------------------------------------------------------------+
 ⭐좋은 객체지향프로그래밍
 - 다형성이 가장 중요하다!
@@ -385,3 +387,22 @@
 !! src > main > java > hello.core > HelloLomBok.java    ⇒ 기본 사용법 (Getter, Setter, ToString)
    src > main > java > ... > order > OrderServiceImpl   ⇒ 생성자 사용법 (RequiredArgsConstructor)
 - @RequiredArgsConstructor 기능을 사용하면 final이 붙은 필드를 모아서 생성자를 자동으로 만들어준다.
+
+*조회 대상 빈이 2개 이상일 때 UnsatisfiedDependencyException 해결 방법
+- @Autowired 필드 명 매칭
+   ↳ src > main > java > ... > order > OrderServiceImpl.java 주석 참고
+  : 1. 타입 매칭
+     → 2. 타입매칭의 결과가 2개 이상일 경우 필드 명, 파라미터 명으로 빈 이름 매칭
+- @Qualifier @Qualifier끼리 매칭 빈 이름 매칭
+   ↳ src > main > java > ... > order > OrderServiceImpl.java 주석 참고
+     src > main > java > ... > discount > RateDiscountPolicy.java 에 @Qualifier("mainDiscountPolicy") 추가
+     src > main > java > ... > discount > FixDiscountPolicy.java 에 @Qualifier("fixDiscountPolicy") 추가
+   : 1. @Qualifier끼리 매칭
+      → 빈 이름 매칭
+      → NoSuchBeanDefinitionException 예외 발생
+     ⇒ @Qualifier 는 @Qualifier 를 찾는 용도로만 사용
+- @Primary 사용
+   ↳ src > main > java > ... > discount > RateDiscountPolicy.java 에 @Primary 추가
+   : 우선순위를 정하는 방법이다.
+ ⇒ @Primary 를 사용하면 이렇게 @Qualifier 를 붙일 필요가 없기 때문에 코드가 깔끔하다.
+   (@Primary 는 기본값 처럼 동작하는 것이고, @Qualifier 는 매우 상세하게 동작한다. 이 둘 중에서는 @Qualifier 가 우선권이 높다.)
