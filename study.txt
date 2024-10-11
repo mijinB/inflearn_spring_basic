@@ -531,3 +531,20 @@
    ObjectProvider는 DL을 위한 편의 기능을 많이 제공해주고 스프링 외에 별도의 의존관계 추가가 필요 없기 때문에 편리하다.
    만약(정말 그럴일은 거의 없겠지만) 코드를 스프링이 아닌 다른 컨테이너에서도 사용할 수 있어야 한다면 JSR-330 Provider를 사용해야한다.
  💡실무에서 웹 애플리케이션을 개발해보면, 싱글톤 빈으로 대부분의 문제를 해결할 수 있기 때문에 프로토타입 빈을 직접적으로 사용하는 일은 매우 드물다.
+
+*웹 스코프
+- 웹 스코프는 웹 환경에서만 동작한다.
+- 웹 스코프는 프로토타입과 다르게 스프링이 해당 스코프의 종료시점까지 관리한다. 따라서 종료 메서드가 호출된다.
+!! src > main > java > ... > common > MyLogger.java
+- spring-boot-starter-web 라이브러리를 추가하면 스프링 부트는 내장 톰켓 서버를 활용해서 웹 서버와 스프링을 함께 실행시킨다. ⇒ localhost:8080
+- 기대하는 공통 포멧: [UUID][requestURL] {message}
+   ↳ UUID를 사용해서 HTTP 요청을 구분 ⇒ UUID 가 같으면 동일한 고객한테서 온 거라는 것을 알 수 있다.
+     requestURL 정보도 추가로 넣어서 어떤 URL을 요청해서 남은 로그인지 확인
+- @Scope(value = "request") 를 사용해서 request 스코프로 지정했다. 이제 이 빈은 HTTP 요청 당 하나씩 생성되고, HTTP 요청이 끝나는 시점에 소멸된다.
+   → 생성되는 시점에 자동으로 @PostConstruct 초기화 메서드를 사용해서 uuid를 생성해서 저장해둔다. 이 빈은 HTTP 요청당 하나씩 생성되므로, uuid를 저장해두면 다른 HTTP 요청과 구분할 수 있다.
+   → 빈이 소멸되는 시점에 @PreDestroy 를 사용해서 종료 메시지를 남긴다.
+   → requestURL 은 이 빈이 생성되는 시점에는 알 수 없으므로, 외부에서 setter로 입력 받는다. (src > main > java > ... > web > LogDemoController.java 에서 준다.)
+- 스프링 애플리케이션을 실행하는 시점에 싱글톤 빈은 생성해서 주입이 가능하지만, request 스코프 빈은 아직 생성되지 않는다. 이 빈은 실제 고객의 요청이 와야 생성할 수 있다.
+   ↳ src > main > java > ... > web > LogDemoController.java 에서 ObjectProvider를 사용함으로써 해결
+     : ObjectProvider 덕분에 ObjectProvider.getObject() 를 호출하는 시점까지 request scope 빈의 생성을 지연할 수 있다.
+       ObjectProvider.getObject() 를 호출하시는 시점에는 HTTP 요청이 진행중이므로 request scope 빈의 생성이 정상 처리된다.
