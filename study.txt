@@ -510,3 +510,10 @@
 *싱글톤 빈에서 프로토타입 빈 사용
 !! src > test > java > ... > lifecycle > SingletonWithPrototypeTest1.java
 - 스프링은 일반적으로 싱글톤 빈을 사용하므로, 싱글톤 빈이 프로토타입 빈을 사용하게 된다. 그런데 싱글톤 빈은 생성 시점에만 의존관계 주입을 받기 때문에 프로토타입 빈이 새로 생성되지만, 싱글톤 빈과 함께 계속 유지된다.
+- ObjectProvider (구 ObjectFactory)
+   ↳ SingletonWithPrototypeTest1.java 의 ClientBean 부분 참고
+  ·싱글톤 빈과 함께 계속 유지되는 문제점 해결.
+  ·AnnotationConfigApplicationContext 한테 직접 찾는 게 아니고, ObjectProvider 가 찾아주는 기능만 제공해주는 것이다.
+  ·prototypeBeanProvider.getObject() 을 통해서 항상 새로운 프로토타입 빈이 생성되는 것을 확인할 수 있다.
+  ·ObjectProvider 의 getObject() 를 호출하면 내부에서는 스프링 컨테이너를 통해 해당 빈을 찾아서 반환한다. (DL)
+  ·과거에는 ObjectFactory 가 있었는데, 여기에 편의 기능을 추가해서 ObjectProvider 가 만들어졌다.
