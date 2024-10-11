@@ -21,7 +21,6 @@ public class BeanLifeCycleTest {
         public NetworkClient networkClient() {
             // 객체 생성 후
             NetworkClient networkClient = new NetworkClient();
-            // setUrl 을 하기 때문에 출력에는 모두 url 이 null 이다.
             networkClient.setUrl("http://hello-spring.dev");
             return networkClient;
         }
