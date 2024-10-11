@@ -535,6 +535,8 @@
 *웹 스코프
 - 웹 스코프는 웹 환경에서만 동작한다.
 - 웹 스코프는 프로토타입과 다르게 스프링이 해당 스코프의 종료시점까지 관리한다. 따라서 종료 메서드가 호출된다.
+
+*웹 스코프의 Provider
 !! src > main > java > ... > common > MyLogger.java
 - spring-boot-starter-web 라이브러리를 추가하면 스프링 부트는 내장 톰켓 서버를 활용해서 웹 서버와 스프링을 함께 실행시킨다. ⇒ localhost:8080
 - 기대하는 공통 포멧: [UUID][requestURL] {message}
@@ -548,3 +550,15 @@
    ↳ src > main > java > ... > web > LogDemoController.java 에서 ObjectProvider를 사용함으로써 해결
      : ObjectProvider 덕분에 ObjectProvider.getObject() 를 호출하는 시점까지 request scope 빈의 생성을 지연할 수 있다.
        ObjectProvider.getObject() 를 호출하시는 시점에는 HTTP 요청이 진행중이므로 request scope 빈의 생성이 정상 처리된다.
+
+*웹 스코프의 프록시
+!! src > main > java > ... > web > MyLogger.java 에서 @Scope(value = "request", proxyMode = ScopedProxyMode.TARGET_CLASS) 프록시모드 지정
+- 이렇게 하면 MyLogger의 가짜 프록시 클래스를 만들어두고 HTTP request와 상관 없이 가짜 프록시 클래스를 다른 빈에 미리 주입해 둘 수 있다.
+- @Scope 의 proxyMode = ScopedProxyMode.TARGET_CLASS) 를 설정하면 스프링 컨테이너는 CGLIB 라는 바이트코드를 조작하는 라이브러리를 사용해서, MyLogger를 상속받은 가짜 프록시 객체를 생성한다.
+- 스프링 컨테이너에 "myLogger"라는 이름으로 진짜 대신에 이 가짜 프록시 객체를 등록한다.
+- 그래서 의존관계 주입도 이 가짜 프록시 객체가 주입된다.
+- 가짜 프록시 객체는 요청이 오면 그때 내부에서 진짜 빈을 요청하는 위임 로직이 들어있다. (가짜 프록시 객체는 내부에 진짜 myLogger 를 찾는 방법을 알고 있다.)
+- 가짜 프록시 객체는 원본 클래스를 상속 받아서 만들어졌기 때문에 이 객체를 사용하는 클라이언트 입장에서는 사실 원본인지 아닌지도 모르게, 동일하게 사용할 수 있다.(다형성)
+
+ ⇒ 마치 싱글톤을 사용하는 것 같지만 다르게 동작하기 때문에 결국 주의해서 사용해야 한다.
+   이런 특별한 scope는 꼭 필요한 곳에만 최소화해서 사용하자, 무분별하게 사용하면 유지보수하기 어려워진다.
